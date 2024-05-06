@@ -1,6 +1,7 @@
 # Author: Kelly Yong
 
 from command import Command
+import json
 
 
 # Return to home page
@@ -18,6 +19,40 @@ def confirm_choice():
     else:
         print("Invalid input. Please type 'y' for yes and 'n' for no")
         confirm_choice()
+
+
+# Add Session Feature
+def add_session(session_list):
+    f = open('database.txt', 'a', encoding="utf-8")
+    f.write(str(session_list))
+    f.write("\n")
+    f.close()
+
+
+# Add Prompt for details
+def add_prompt():
+    """Get input for add session from user"""
+    date_input = str(input("Date of session (format - mm/dd/yyyy): "))
+    time_input = str(
+        input("Duration of this session (format - hr-min): "))
+    productivity_input = str(
+        input("Productivity of this session (int 0 (bad...) to 5 (great!)): "))
+
+    session_list = [date_input, time_input, productivity_input]
+    return session_list
+
+
+# View All Feature
+def view_all():
+    f = open('database.txt', 'r', encoding="utf-8")
+    for line in f:
+        print(line, end='')
+    f.close()
+
+
+# Clear All Feature
+def clear_all():
+    open('database.txt', 'w').close()
 
 
 if __name__ == "__main__":
@@ -108,9 +143,14 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
             if user_select == valid_options[0]:
                 # Display selected option title and options
                 print(f"\nSelection: <<< {add_commands._title} >>>\n")
-                print(add_commands.show_options())
+                # print(add_commands.show_options())
 
                 # Insert prompt & functions to add session
+                session_details = add_prompt()
+                add_session(session_details)
+
+                # Confirm add is succesful
+                print("Session added!")
 
                 # Ask to return to home page
                 return_home()
@@ -125,6 +165,8 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 user_select = view_all_commands.user_select()
 
                 # Insert prompt & functions to view progress
+                if user_select == list(view_all_options.keys())[0]:
+                    view_all()
 
                 # Ask to return to home page
                 return_home()
@@ -158,6 +200,7 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                           """)
                     if confirm_choice() == True:
                         # delete all
+                        clear_all()
                         print("All sessions deleted")
                     else:
                         print("Action abandoned")
@@ -172,5 +215,5 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 exit()
 
     except KeyboardInterrupt:
-        print("\nExiting... Are you going to practice?")
+        print("\nExiting... Are you going to practice?\n")
         exit()

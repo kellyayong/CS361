@@ -2,6 +2,12 @@
 
 from command import Command
 
+
+# Return to home page
+def return_home():
+    input("Press ENTER to return to home page... ")
+
+
 if __name__ == "__main__":
     # Home  - Title
     title = """
@@ -71,7 +77,10 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 print(f"\nSelection: <<< {add_commands._title} >>>\n")
                 print(add_commands.show_options())
 
-                # Insert prompt & functions to add session
+                # Insert prompt & functi1ons to add session
+
+                # Ask to return to home page
+                return_home()
 
             # Search
             elif user_select == valid_options[1]:

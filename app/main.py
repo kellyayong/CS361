@@ -36,7 +36,7 @@ def add_prompt():
     time_input = str(
         input("Duration of this session (format - hr-min): "))
     productivity_input = str(
-        input("Productivity of this session (int 0 (bad...) to 5 (great!)): "))
+        input("Productivity of this session (int 0 (Bad...) to 5 (Great!)): "))
 
     session_list = [date_input, time_input, productivity_input]
     return session_list
@@ -73,11 +73,11 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
 
     # Home Page Options
     home_options = {
-        1: "Add new practice session",
-        2: "See progress - view all sessions",
-        3: "Search session",
-        4: "Delete session",
-        5: "Exit"
+        1: "Add - add new practice session",
+        2: "See progress - view all your past sessions",
+        3: "Search session - search for a session by Date, Duration, or Productivity",
+        4: "Delete session - delete a specific session or clear all",
+        5: "Exit program"
     }
 
     # Add Options

@@ -16,3 +16,13 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
 
     # Display Title & Subtitle
     print(f"{title}\n{subtitle}\n")
+
+    # Home Page Options
+    home_options = {
+        1: "Add new practice session",
+        2: "Search for sessions",
+        3: "View all past practice sessions",
+        4: "Edit session",
+        5: "Delete session",
+        6: "Exit"
+    }

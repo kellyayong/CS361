@@ -31,6 +31,28 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
     # Create commands for Home
     home_commands = Command("Home", home_options)
 
+    # Add Options
+    add_options = {
+        "Date Practiced": "Enter date in the format of 00/00/0000 [mm/dd/yyyy]",
+        "Time Practiced": "Enter duration in the format of 00 00 [hr min]",
+        "Session Type": "Practiced a song or fundamentals? Enter 1 (song) or 2 (fundamentals)",
+        "Productivity Rating": "Was it a productive session? 0 (Bad...) to 5 (Great!)"
+    }
+
+    # Create commands for Add
+    add_commands = Command("Add a Session", add_options)
+
+    # Search Options
+    search_options = {
+        1: "Search by date",
+        2: "Search by duration",
+        3: "View all",
+        4: "Return home"
+    }
+
+    # Create commands for Search
+    search_commands = Command("Search for Session", search_options)
+
     try:
         while True:
             # Show home page title and ptions and get user selection
@@ -45,8 +67,11 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
 
             # Add new
             if user_select == valid_options[0]:
-                # Insert prompt & functi1ons to add session
-                continue
+                # Display selected option title and options
+                print(f"\nSelection: <<< {add_commands._title} >>>\n")
+                print(add_commands.show_options())
+
+                # Insert prompt & functions to add session
 
             # Search
             elif user_select == valid_options[1]:

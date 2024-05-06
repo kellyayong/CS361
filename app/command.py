@@ -20,11 +20,10 @@ class Command:
             try:
                 user_select = int(
                     input("Input your selection and press ENTER: "))
-                if min_option < user_select > max_option:
+                if user_select < min_option or user_select > max_option:
                     raise ValueError
             except ValueError:
                 print(
                     f"Oops! That was not a valid option. Please select from {min_option} to {max_option}")
-                continue
             else:
                 return user_select

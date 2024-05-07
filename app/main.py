@@ -82,8 +82,9 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
 
     # Add Options
     add_options = {
-        "Date Practiced": "Enter date in the format of 00/00/0000 [mm/dd/yyyy]",
-        "Time Practiced": "Enter duration in the format of 00 00 [hr min]",
+        # Description
+        "Date Practiced": "Enter the date of the session in the format of 00/00/0000 [mm/dd/yyyy]",
+        "Time Practiced": "Enter the duration of the session in the format of 00 00 [hr min]",
         "Productivity Rating": "Was it a productive session? 0 (Bad...) to 5 (Great!)"
     }
 
@@ -131,7 +132,7 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
         while True:
             # Show home page title, options, and get user selection
             print(f"\n<<< {home_commands._title} >>>\n")
-            print(home_commands.show_options())
+            home_commands.show_options()
 
             # get user selection
             user_select = home_commands.user_select()
@@ -143,7 +144,8 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
             if user_select == valid_options[0]:
                 # Display selected option title and options
                 print(f"\nSelection: <<< {add_commands._title} >>>\n")
-                # print(add_commands.show_options())
+                # Show descriptions
+                add_commands.show_options()
 
                 # Insert prompt & functions to add session
                 session_details = add_prompt()
@@ -159,7 +161,7 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
             elif user_select == valid_options[1]:
                 # Display selected option title and options
                 print(f"\nSelection: <<< {view_all_commands._title} >>>\n")
-                print(view_all_commands.show_options())
+                view_all_commands.show_options()
 
                 # Get user seletion
                 user_select = view_all_commands.user_select()
@@ -175,7 +177,7 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
             elif user_select == valid_options[2]:
                 # Display selected option title and options
                 print(f"\nSelection: <<< {search_commands._title} >>>\n")
-                print(search_commands.show_options())
+                search_commands.show_options()
 
                 # Insert prompt & functions to search for a session
 
@@ -186,7 +188,7 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
             elif user_select == valid_options[3]:
                 # Display selected option title and options
                 print(f"\nSelection: <<< {delete_commands._title} >>>\n")
-                print(delete_commands.show_options())
+                delete_commands.show_options()
 
                 # Get user seletion
                 user_select = delete_commands.user_select()

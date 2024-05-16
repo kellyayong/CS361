@@ -1,7 +1,181 @@
 # Author: Kelly Yong
 
 from command import Command
-import json
+import sqlite3
+import os.path
+
+
+# Path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "database.db")
+
+
+###### Database ######
+
+# Database - create_table
+def create_table():
+    try:
+        # Connection object
+        connection = sqlite3.connect(db_path)
+
+        # cursor object
+        cursor = connection.cursor()
+
+        # Creating table
+        sessions = """CREATE TABLE IF NOT EXISTS sessions (
+                session_id INTEGER PRIMARY KEY, 
+                date DATE, 
+                duration TIME, 
+                productivity INTEGER
+            );"""
+
+        cursor.execute(sessions)
+        connection.commit()
+        print("Sessions table successfully created in database.")
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Failed to create table in database.", error)
+    finally:
+        if connection:
+            connection.close()
+            # print("The SQLite connection is closed")
+
+
+# Database - add session
+def add_session(session_list):
+    date_input = session_list[0]
+    duration_input = session_list[1]
+    productivity_input = session_list[2]
+
+    try:
+        # Connection object
+        connection = sqlite3.connect(db_path)
+        # cursor object
+        cursor = connection.cursor()
+        # print("Successfully Connected to SQLite")
+
+        count = cursor.execute("INSERT INTO sessions (session_id, date, duration, productivity) VALUES (NULL,?,?,?)",
+                               (date_input, duration_input, productivity_input))
+        connection.commit()
+        print(
+            f"\n{cursor.rowcount} Session added successfully!\n")
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Failed to add session into table! :( \n", error)
+    finally:
+        if connection:
+            connection.close()
+            # print("The SQLite connection is closed")
+
+
+# View All Feature
+def view_all():
+    try:
+        with sqlite3.connect(db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM sessions")
+            rows = cursor.fetchall()
+            print(f"\n<<< All Sessions >>>\n")
+            for row in rows:
+                print("SESSION ID: ", row[0])
+                print("DATE: ", row[1])
+                print("DURATION: ", row[2])
+                print("PRODUCTIVITY: ", row[3])
+                print("\n")
+    except sqlite3.Error as e:
+        print(e)
+
+
+# Search session
+def search_session(selection, input):
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        if selection == 1:
+            cursor.execute("SELECT * FROM sessions WHERE date=?", (input,))
+            rows = cursor.fetchall()
+            for row in rows:
+                # print("\n")
+                print("SESSION ID: ", row[0])
+                print("DATE: ", row[1])
+                print("DURATION: ", row[2])
+                print("PRODUCTIVITY: ", row[3])
+        elif selection == 2:
+            cursor.execute("SELECT * FROM sessions WHERE duration=?", (input,))
+            rows = cursor.fetchall()
+            for row in rows:
+                # print("\n")
+                print("SESSION ID: ", row[0])
+                print("DATE: ", row[1])
+                print("DURATION: ", row[2])
+                print("PRODUCTIVITY: ", row[3])
+        elif selection == 3:
+            cursor.execute(
+                "SELECT * FROM sessions WHERE productivity=?", (input,))
+            rows = cursor.fetchall()
+            for row in rows:
+                # print("\n")
+                print("SESSION ID: ", row[0])
+                print("DATE: ", row[1])
+                print("DURATION: ", row[2])
+                print("PRODUCTIVITY: ", row[3])
+        else:
+            print("Invalid input, please try again.")
+    except sqlite3.Error as e:
+        print(e)
+        return_home()
+
+
+# Clear All data from database
+def clear_all():
+    try:
+        connection = sqlite3.connect(db_path, isolation_level=None)
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM sessions")
+        connection.commit()
+        cursor.close()
+    except sqlite3.Error as e:
+        print(e)
+    finally:
+        if connection:
+            connection.close()
+
+
+# Delete specific session from database
+def delete_session(selection, input):
+    try:
+        # automates commits with isolation_level set to none
+        connection = sqlite3.connect(db_path, isolation_level=None)
+        cursor = connection.cursor()
+        if selection == 1:
+            cursor.execute(
+                "DELETE FROM sessions WHERE date=?", (input,))
+            # connection.commit()
+            print("Success, session deleted!")
+        elif selection == 2:
+            cursor.execute("DELETE FROM sessions WHERE duration=?", (input,))
+            # connection.commit()
+            print("Success, session deleted!")
+        elif selection == 3:
+            cursor.execute(
+                "DELETE FROM sessions WHERE productivity=?", (input,))
+            # connection.commit()
+            print("Success, session deleted!")
+        else:
+            print("Invalid input, please try again.")
+
+        view_all()
+        cursor.close()
+    except sqlite3.Error as e:
+        print(e)
+        return_home()
+    finally:
+        if connection:
+            connection.close()
+            # print("The SQLite connection is closed")
 
 
 # Return to home page
@@ -21,38 +195,32 @@ def confirm_choice():
         confirm_choice()
 
 
-# Add Session Feature
-def add_session(session_list):
-    f = open('database.txt', 'a', encoding="utf-8")
-    f.write(str(session_list))
-    f.write("\n")
-    f.close()
-
-
-# Add Prompt for details
+# Add Prompt asking for details
 def add_prompt():
     """Get input for add session from user"""
-    date_input = str(input("Date of session (format - mm/dd/yyyy): "))
-    time_input = str(
-        input("Duration of this session (format - hr-min): "))
-    productivity_input = str(
+    date_input = str(input("Date of session (format - YYYY-MM-DD): "))
+    duration_input = str(
+        input("Duration of this session (format - HH:MM:SS): "))
+    productivity_input = int(
         input("Productivity of this session (int 0 (Bad...) to 5 (Great!)): "))
 
-    session_list = [date_input, time_input, productivity_input]
+    session_list = [date_input, duration_input, productivity_input]
     return session_list
 
 
-# View All Feature
-def view_all():
-    f = open('database.txt', 'r', encoding="utf-8")
-    for line in f:
-        print(line, end='')
-    f.close()
-
-
-# Clear All Feature
-def clear_all():
-    open('database.txt', 'w').close()
+# Search Prompt asking for details
+def search_prompt(selection):
+    """Get input for the search session from user"""
+    if selection == 1:
+        user_input = str(input(
+            "Enter date of the session (format - YYYY-MM-DD): "))
+    elif selection == 2:
+        user_input = str(
+            input("Enter duration of the session (format - HH:MM:SS): "))
+    elif selection == 3:
+        user_input = int(
+            input("Enter productivity of the session (int 0 (Bad...) to 5 (Great!)): "))
+    return user_input
 
 
 if __name__ == "__main__":
@@ -83,8 +251,8 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
     # Add Options
     add_options = {
         # Description
-        "Date Practiced": "Enter the date of the session in the format of 00/00/0000 [mm/dd/yyyy]",
-        "Time Practiced": "Enter the duration of the session in the format of 00 00 [hr min]",
+        "Date Practiced": "Enter the date of the session in the format of [YYYY-MM-DD]",
+        "Time Practiced": "Enter the duration of the session in the format [HH:MM:SS]",
         "Productivity Rating": "Was it a productive session? 0 (Bad...) to 5 (Great!)"
     }
 
@@ -128,6 +296,11 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
     # Create commands for Delete
     delete_commands = Command("Delete Session", delete_options)
 
+    ##### Database #####
+
+    # Create sessions database table
+    create_table()
+
     try:
         while True:
             # Show home page title, options, and get user selection
@@ -149,10 +322,9 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
 
                 # Insert prompt & functions to add session
                 session_details = add_prompt()
-                add_session(session_details)
 
-                # Confirm add is succesful
-                print("Session added!")
+                # print(session_details)
+                add_session(session_details)
 
                 # Ask to return to home page
                 return_home()
@@ -179,7 +351,14 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 print(f"\nSelection: <<< {search_commands._title} >>>\n")
                 search_commands.show_options()
 
+                # Get user seletion
+                user_select = search_commands.user_select()
+
+                # Get search input
+                search_input = search_prompt(user_select)
+
                 # Insert prompt & functions to search for a session
+                search_session(user_select, search_input)
 
                 # Ask to return to home page
                 return_home()
@@ -203,19 +382,35 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                     if confirm_choice() == True:
                         # delete all
                         clear_all()
-                        print("All sessions deleted")
+                        print("All sessions deleted!")
                     else:
                         print("Action abandoned")
+                elif user_select == list(delete_options.keys())[0] or list(delete_options.keys())[1] or list(delete_options.keys())[2]:
+                    # Get search input to find which to delete
+                    search_input = search_prompt(user_select)
+                    print(
+                        f"you have selected {user_select} and your input is {search_input}")
 
-                 # Ask to return to home page
+                    # Delete the searched for session
+                    delete_session(user_select, search_input)
+
+                # Ask to return to home page
                 return_home()
 
             # Exit
             elif user_select == valid_options[4]:
                 # Exit program
                 print("Exiting... See you soon, buddy\n\n<< Remember to practice >>\n")
+
+                # close connection to database
+                # connection.close()
+
                 exit()
 
     except KeyboardInterrupt:
         print("\nExiting... Are you going to practice?\n")
+
+        # close connection to database
+        # connection.close()
+
         exit()

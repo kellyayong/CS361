@@ -3,6 +3,7 @@
 from command import Command
 import sqlite3
 import os.path
+import zmq
 
 
 # Path
@@ -180,7 +181,7 @@ def delete_session(selection, input):
 
 # Return to home page
 def return_home():
-    input("Press ENTER to return to home page... ")
+    input("\nPress ENTER to return to home page... ")
 
 
 # Get confirmation
@@ -223,6 +224,28 @@ def search_prompt(selection):
     return user_input
 
 
+### Connect to Microservice ###
+def connect_microservice(socket_port, send_msg, send_type):
+    # Create context
+    context = zmq.Context()
+
+    # Create socket
+    socket = context.socket(zmq.REQ)
+    socket.connect(socket_port)
+
+    if send_type == "string":
+        # Send request
+        socket.send_string(send_msg)
+    elif send_type == "b":
+        socket.send(b'send_msg')
+
+    # Receive
+    message = socket.recv_string()
+
+    # Return message
+    return message
+
+
 if __name__ == "__main__":
     # Home  - Title
     title = """
@@ -245,7 +268,8 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
         2: "See progress - view all your past sessions",
         3: "Search session - search for a session by Date, Duration, or Productivity",
         4: "Delete session - delete a specific session or clear all",
-        5: "Exit program"
+        5: "Need Motivation? - get a random quote",
+        6: "Exit program"
     }
 
     # Add Options
@@ -258,9 +282,11 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
 
     # View All Options
     view_all_options = {
-        # More filter options?
+        # More options
         1: "View all",
-        2: "Return home"
+        2: "Display table",
+        3: "Graph of productivity",
+        4: "Return home"
     }
 
     # Search Options
@@ -281,6 +307,12 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
         5: "Return home"
     }
 
+    # Quote Options
+    quote_options = {
+        1: "Need some motivational quotes?",
+        2: "Return home"
+    }
+
     # Create commands for Home
     home_commands = Command("Home", home_options)
 
@@ -295,6 +327,9 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
 
     # Create commands for Delete
     delete_commands = Command("Delete Session", delete_options)
+
+    # Create commands for Quote
+    quote_commands = Command("Motivational Quotes", quote_options)
 
     ##### Database #####
 
@@ -338,9 +373,37 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 # Get user seletion
                 user_select = view_all_commands.user_select()
 
-                # Insert prompt & functions to view progress
+                # Option 1 - view all sessions as list
                 if user_select == list(view_all_options.keys())[0]:
                     view_all()
+
+                # Option 2 - display table with all sessions
+                if user_select == list(view_all_options.keys())[1]:
+                    # Assign socket
+                    socket_port = "tcp://localhost:5004"
+
+                    # Assign request message to send
+                    send_msg = "display table"
+
+                    # Connect to microservice
+                    message = connect_microservice(
+                        socket_port, send_msg, "string")
+
+                    print(f"\n{message}")
+
+                # Option 3 - view graph of productivity
+                if user_select == list(view_all_options.keys())[2]:
+                    # Assign socket
+                    socket_port = "tcp://localhost:5002"
+
+                    # Assign request message to send
+                    send_msg = "graph productivity"
+
+                    # Connect to microservice
+                    message = connect_microservice(
+                        socket_port, send_msg, "string")
+
+                    print(message)
 
                 # Ask to return to home page
                 return_home()
@@ -397,8 +460,36 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 # Ask to return to home page
                 return_home()
 
-            # Exit
+            # Quote
             elif user_select == valid_options[4]:
+                # Display selected motivational quotes
+                print(f"\nSelection: <<< {quote_commands._title} >>>\n")
+                quote_commands.show_options()
+                # Get user seletion
+                user_select = quote_commands.user_select()
+
+                # Insert prompt & functions to delete session
+                if user_select == list(quote_options.keys())[0]:
+
+                    # Assign socket
+                    socket_port = "tcp://localhost:5003"
+
+                    # Assign request message to send
+                    send_msg = "motivation"
+                    # send_msg = "Quote please!"
+
+                    # Connect to microservice
+                    message = connect_microservice(
+                        socket_port, send_msg, "string")
+
+                    # Print Quote
+                    # print(f"\n<<< {message} >>>")
+
+                # Ask to return to home page
+                return_home()
+
+            # Exit
+            elif user_select == valid_options[5]:
                 # Exit program
                 print("Exiting... See you soon, buddy\n\n<< Remember to practice >>\n")
 

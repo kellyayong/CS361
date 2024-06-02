@@ -7,7 +7,7 @@ class Command:
 
     def show_options(self):
         for key in self._options.keys():
-            print(f"{key} - {self._options[key]}\n")
+            print(f"{key} - {self._options[key]}")
 
     # Get user input and check if selection if valid
     def user_select(self):
@@ -19,7 +19,7 @@ class Command:
         while True:
             try:
                 user_select = int(
-                    input("Input your selection and press ENTER: "))
+                    input("\nInput your selection and press ENTER: "))
                 if user_select < min_option or user_select > max_option:
                     raise ValueError
             except ValueError:

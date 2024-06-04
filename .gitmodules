@@ -1,0 +1,3 @@
+[submodule "microservice-a/CS361-Sprint2"]
+	path = microservice-a/CS361-Sprint2
+	url = https://github.com/kvn-lee/CS361-Sprint2

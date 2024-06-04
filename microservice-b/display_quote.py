@@ -43,6 +43,7 @@ def get_quote():
 
     # Connect to microservice
     quote = connect_microservice(socket_port, send_msg, "b")
+    print(quote)
 
     # Update quote
     my_var.set(quote)
@@ -83,5 +84,5 @@ while True:
         # run the gui
         window.mainloop()
 
-    socket.send_string("Graphed Productivity")
+    socket.send_string("Displayed quote")
     print("Request sent")

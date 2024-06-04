@@ -294,8 +294,7 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
         1: "Search by date",
         2: "Search by duration",
         3: "Search by productivity",
-        4: "View all",
-        5: "Return home"
+        4: "Return home"
     }
 
     # Delete Options
@@ -417,14 +416,18 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 # Get user seletion
                 user_select = search_commands.user_select()
 
-                # Get search input
-                search_input = search_prompt(user_select)
+                # return home if user select home
+                if user_select == 4:
+                    return_home()
+                else:
+                    # Get search input
+                    search_input = search_prompt(user_select)
 
-                # Insert prompt & functions to search for a session
-                search_session(user_select, search_input)
+                    # Insert prompt & functions to search for a session
+                    search_session(user_select, search_input)
 
-                # Ask to return to home page
-                return_home()
+                    # Ask to return to home page
+                    return_home()
 
             # Delete
             elif user_select == valid_options[3]:
@@ -436,7 +439,10 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                 user_select = delete_commands.user_select()
 
                 # Insert prompt & functions to delete session
-                if user_select == list(delete_options.keys())[3]:
+                if user_select == list(delete_options.keys())[4]:
+                    # Ask to return to home page
+                    return_home()
+                elif user_select == list(delete_options.keys())[3]:
                     # Warning for clear all
                     print("""
                           WARNING: Are you sure you want to clear all? 
@@ -454,11 +460,15 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                     print(
                         f"you have selected {user_select} and your input is {search_input}")
 
-                    # Delete the searched for session
-                    delete_session(user_select, search_input)
-
-                # Ask to return to home page
-                return_home()
+                    if confirm_choice() == True:
+                        # Delete the searched for session
+                        delete_session(user_select, search_input)
+                        print("Selected sessions deleted!")
+                    else:
+                        print("Action abandoned")
+                else:
+                    # Ask to return to home page
+                    return_home()
 
             # Quote
             elif user_select == valid_options[4]:
@@ -481,6 +491,7 @@ ____________  ___  _____ _____ _____ _____  _____  ______ _   _______________   
                     # Connect to microservice
                     message = connect_microservice(
                         socket_port, send_msg, "string")
+                    print(message)
 
                     # Print Quote
                     # print(f"\n<<< {message} >>>")

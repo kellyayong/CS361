@@ -59,5 +59,5 @@ while True:
         # run the gui
         window.mainloop()
 
-    socket.send_string("Graphed Productivity")
+    socket.send_string("Graphed productivity")
     print("Request sent")
